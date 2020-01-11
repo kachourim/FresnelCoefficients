@@ -8,10 +8,12 @@ warnings.filterwarnings("ignore") # removes warning in case of values beyond [-1
 
 
 # General parameters
+er_1	= 1					# relative permittivity of medium 1
+mr_1	= 1					# relative permeability of medium 1
 
-
-# Parameters of medium 1
- 
+# Parameters of medium 2
+er_2	= "Au.txt"		# relative permittivity of medium 2
+mr_2	= 1					# relative permeability of medium 2
 
 # Incidence angle(s) [°]
 tet_i	= linspace(0,90,1000) 
