@@ -3,8 +3,7 @@
 from numpy import *
 from matplotlib.pyplot import *
 import scipy.interpolate
-import warnings
-warnings.filterwarnings("ignore") # removes warning in case of values beyond [-1,+1] in the definition of tet_t
+import cmath as cc
 
 
 # General parameters
@@ -25,6 +24,15 @@ lam 	= linspace(200e-9,900e-9,500)
 NK	= 1
 
 
+
+
+
+
+
+
+
+
+
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -40,58 +48,54 @@ def Fresnel1DAng(er1, mr1, er2, mr2):
 	# ================================
 	
 	# Parameters
-	Z1 	= Z0*sqrt(mr1/er1)
-	Z2 	= Z0*sqrt(mr2/er2)
-	n1 	= sqrt(er1*mr1)
-	n2	= sqrt(er2*mr2)
-	tet_t	= arcsin(n1/n2*sin(teti))
+	Z1 	= Z0*cc.sqrt(mr1/er1)
+	Z2 	= Z0*cc.sqrt(mr2/er2)
+	n1 	= cc.sqrt(er1*mr1)
+	n2	= cc.sqrt(er2*mr2)
+	tet_t	=  [cc.asin(n1/n2*cc.sin(x)) for x in teti]
 
 	# Parallel polarization
 	R_p1 	= abs((Z2*cos(tet_t) - Z1*cos(teti))/(Z2*cos(tet_t) + Z1*cos(teti)))**2
-	R_p1[isnan(R_p1)] = 1
 	T_p1	= 1 - R_p1
 
 	# Perpendicular polarization
 	R_s1 	= abs((Z2*cos(teti) - Z1*cos(tet_t))/(Z2*cos(teti) + Z1*cos(tet_t)))**2
-	R_s1[isnan(R_s1)] = 1
 	T_s1	= 1 - R_s1
 
-	tet_b = arctan(n2[0]/n1[0])*180/pi
+	tet_b = cc.atan(n2/n1)*180/pi
 	if isreal(tet_b) and not isnan(tet_b):
-		print("Incidence from medium 1: Brewster angle for Rp at {0:.2f}°".format(tet_b))
+		print("Incidence from medium 1: Brewster angle for Rp at {0:.2f}°".format(real(tet_b)))
 
-	tet_c = arcsin(n2[0]/n1[0])*180/pi
+	tet_c = cc.asin(n2/n1)*180/pi
 	if isreal(tet_c) and not isnan(tet_c):
-		print("Incidence from medium 1: Critical angle at {0:.2f}°".format(tet_c))
+		print("Incidence from medium 1: Critical angle at {0:.2f}°".format(real(tet_c)))
 
 	# ================================
 	# Incidence from medium 2
 	# ================================
 	
 	# Parameters
-	Z1 	= Z0*sqrt(mr2/er2)
-	Z2 	= Z0*sqrt(mr1/er1)
-	n1 	= sqrt(er2*mr2)
-	n2	= sqrt(er1*mr1)
-	tet_t	= arcsin(n1/n2*sin(teti))
+	Z1 	= Z0*cc.sqrt(mr2/er2)
+	Z2 	= Z0*cc.sqrt(mr1/er1)
+	n1 	= cc.sqrt(er2*mr2)
+	n2	= cc.sqrt(er1*mr1)
+	tet_t	=  [cc.asin(n1/n2*cc.sin(x)) for x in teti]
 
 	# Parallel polarization
 	R_p2 	= abs((Z2*cos(tet_t) - Z1*cos(teti))/(Z2*cos(tet_t) + Z1*cos(teti)))**2
-	R_p2[isnan(R_p2)] = 1
 	T_p2	= 1 - R_p2
 
 	# Perpendicular polarization
 	R_s2 	= abs((Z2*cos(teti) - Z1*cos(tet_t))/(Z2*cos(teti) + Z1*cos(tet_t)))**2
-	R_s2[isnan(R_s2)] = 1
 	T_s2	= 1 - R_s2
 
-	tet_b = arctan(n2[0]/n1[0])*180/pi
+	tet_b = cc.atan(n2/n1)*180/pi
 	if isreal(tet_b) and not isnan(tet_b):
-		print("Incidence from medium 2: Brewster angle for Rp at {0:.2f}°".format(tet_b))
+		print("Incidence from medium 2: Brewster angle for Rp at {0:.2f}°".format(real(tet_b)))
 		
-	tet_c = arcsin(n2[0]/n1[0])*180/pi
+	tet_c = cc.asin(n2/n1)*180/pi
 	if isreal(tet_c) and not isnan(tet_c):
-		print("Incidence from medium 2: Critical angle at {0:.2f}°".format(tet_c))
+		print("Incidence from medium 2: Critical angle at {0:.2f}°".format(real(tet_c)))
 		
 		
 	# ================================
@@ -135,6 +139,21 @@ def Fresnel1DAng(er1, mr1, er2, mr2):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def Fresnel1DLam(er1, mr1, er2, mr2):
 
 	# ================================
@@ -142,59 +161,40 @@ def Fresnel1DLam(er1, mr1, er2, mr2):
 	# ================================
 	
 	# Parameters
-	Z1 	= Z0*sqrt(mr1/er1)
-	Z2 	= Z0*sqrt(mr2/er2)
-	n1 	= sqrt(er1*mr1)
-	n2	= sqrt(er2*mr2)
-	tet_t	= arcsin(n1/n2*sin(teti))
+	Z1 	= array([Z0*cc.sqrt(mr1[i]/er1[i]) for i in range(len(er1))])
+	Z2 	= array([Z0*cc.sqrt(mr2[i]/er2[i]) for i in range(len(er1))])
+	n1 	= array([cc.sqrt(er1[i]*mr1[i]) for i in range(len(er1))])
+	n2	= array([cc.sqrt(er2[i]*mr2[i]) for i in range(len(er1))])
+	tet_t	= array([cc.asin(n1[i]/n2[i]*cc.sin(teti)) for i in range(len(er1))])
 
 	# Parallel polarization
 	R_p1 	= abs((Z2*cos(tet_t) - Z1*cos(teti))/(Z2*cos(tet_t) + Z1*cos(teti)))**2
-	R_p1[isnan(R_p1)] = 1
 	T_p1	= 1 - R_p1
 
 	# Perpendicular polarization
 	R_s1 	= abs((Z2*cos(teti) - Z1*cos(tet_t))/(Z2*cos(teti) + Z1*cos(tet_t)))**2
-	R_s1[isnan(R_s1)] = 1
 	T_s1	= 1 - R_s1
 
-	tet_b = arctan(n2[0]/n1[0])*180/pi
-	if isreal(tet_b) and not isnan(tet_b):
-		print("Incidence from medium 1: Brewster angle for Rp at {0:.2f}°".format(tet_b))
-
-	tet_c = arcsin(n2[0]/n1[0])*180/pi
-	if isreal(tet_c) and not isnan(tet_c):
-		print("Incidence from medium 1: Critical angle at {0:.2f}°".format(tet_c))
 
 	# ================================
 	# Incidence from medium 2
 	# ================================
 	
-	# Parameters
-	Z1 	= Z0*sqrt(mr2/er2)
-	Z2 	= Z0*sqrt(mr1/er1)
-	n1 	= sqrt(er2*mr2)
-	n2	= sqrt(er1*mr1)
-	tet_t	= arcsin(n1/n2*sin(teti))
+	# Parameters	
+	Z1 	= array([Z0*cc.sqrt(mr2[i]/er2[i]) for i in range(len(er1))])
+	Z2 	= array([Z0*cc.sqrt(mr1[i]/er1[i]) for i in range(len(er1))])
+	n1 	= array([cc.sqrt(er2[i]*mr2[i]) for i in range(len(er1))])
+	n2	= array([cc.sqrt(er1[i]*mr1[i]) for i in range(len(er1))])
+	tet_t	= array([cc.asin(n1[i]/n2[i]*cc.sin(teti)) for i in range(len(er1))])
 
 	# Parallel polarization
 	R_p2 	= abs((Z2*cos(tet_t) - Z1*cos(teti))/(Z2*cos(tet_t) + Z1*cos(teti)))**2
-	R_p2[isnan(R_p2)] = 1
 	T_p2	= 1 - R_p2
 
 	# Perpendicular polarization
 	R_s2 	= abs((Z2*cos(teti) - Z1*cos(tet_t))/(Z2*cos(teti) + Z1*cos(tet_t)))**2
-	R_s2[isnan(R_s2)] = 1
 	T_s2	= 1 - R_s2
 
-	tet_b = arctan(n2[0]/n1[0])*180/pi
-	if isreal(tet_b) and not isnan(tet_b):
-		print("Incidence from medium 2: Brewster angle for Rp at {0:.2f}°".format(tet_b))
-		
-	tet_c = arcsin(n2[0]/n1[0])*180/pi
-	if isreal(tet_c) and not isnan(tet_c):
-		print("Incidence from medium 2: Critical angle at {0:.2f}°".format(tet_c))
-		
 		
 	# ================================
 	# Plot
@@ -237,6 +237,15 @@ def Fresnel1DLam(er1, mr1, er2, mr2):
 
 
 
+
+
+
+
+
+
+
+
+
 	
 	
 def Fresnel2D(Er1, Mr1, Er2, Mr2):
@@ -257,20 +266,18 @@ def Fresnel2D(Er1, Mr1, Er2, Mr2):
 		mr2 	= Mr2[c]
 		c 		= c + 1
 		
-		Z1 	= Z0*sqrt(mr1/er1)
-		Z2 	= Z0*sqrt(mr2/er2)
-		n1 	= sqrt(er1*mr1)
-		n2	= sqrt(er2*mr2)
-		tet_t	= arcsin(n1/n2*sin(teti))
-
+		Z1 	= Z0*cc.sqrt(mr1/er1)
+		Z2 	= Z0*cc.sqrt(mr2/er2)
+		n1 	= cc.sqrt(er1*mr1)
+		n2	= cc.sqrt(er2*mr2)
+		tet_t	= [cc.asin(n1/n2*cc.sin(x)) for x in teti]
+		
 		# Parallel polarization
 		R_p1 	= abs((Z2*cos(tet_t) - Z1*cos(teti))/(Z2*cos(tet_t) + Z1*cos(teti)))**2
-		R_p1[isnan(R_p1)] = 1
 		R_p1v.append(R_p1)
 		
 		# Perpendicular polarization
 		R_s1 	= abs((Z2*cos(teti) - Z1*cos(tet_t))/(Z2*cos(teti) + Z1*cos(tet_t)))**2
-		R_s1[isnan(R_s1)] = 1
 		R_s1v.append(R_s1)
 		
 	T_p1v	= 1 - array(R_p1v)
@@ -327,20 +334,18 @@ def Fresnel2D(Er1, Mr1, Er2, Mr2):
 		mr2 	= Mr2[c]
 		c 		= c + 1
 		
-		Z1 	= Z0*sqrt(mr2/er2)
-		Z2 	= Z0*sqrt(mr1/er1)
-		n1 	= sqrt(er2*mr2)
-		n2	= sqrt(er1*mr1)
-		tet_t	= arcsin(n1/n2*sin(teti))
+		Z1 	= Z0*cc.sqrt(mr2/er2)
+		Z2 	= Z0*cc.sqrt(mr1/er1)
+		n1 	= cc.sqrt(er2*mr2)
+		n2	= cc.sqrt(er1*mr1)
+		tet_t	= [cc.asin(n1/n2*cc.sin(x)) for x in teti]
 
 		# Parallel polarization
 		R_p1 	= abs((Z2*cos(tet_t) - Z1*cos(teti))/(Z2*cos(tet_t) + Z1*cos(teti)))**2
-		R_p1[isnan(R_p1)] = 1
 		R_p1v.append(R_p1)
 		
 		# Perpendicular polarization
 		R_s1 	= abs((Z2*cos(teti) - Z1*cos(tet_t))/(Z2*cos(teti) + Z1*cos(tet_t)))**2
-		R_s1[isnan(R_s1)] = 1
 		R_s1v.append(R_s1)
 		
 	T_p1v	= 1 - array(R_p1v)
@@ -380,6 +385,18 @@ def Fresnel2D(Er1, Mr1, Er2, Mr2):
 	fig.suptitle('Incidence from medium 2') 
 	
 	show()
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 
 
